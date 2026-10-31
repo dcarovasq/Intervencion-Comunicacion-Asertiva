@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Pixelify+Sans:wght@700&display=swap" rel="stylesheet"><title>Ecomoda en 8 Bits: Misión Asertividad</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1a2a3d;color:#F4EBDD;font:17px/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 10px;background:#214E3D;border-bottom:4px solid #8BAA8B}
+header b{font-size:13px;letter-spacing:1px}
+main{max-width:900px;margin:0 auto;padding:12px 10px 60px}
+footer{position:fixed;left:0;right:0;bottom:0;z-index:9;background:#F4EBDD;color:#242A26;text-align:center;font-weight:bold;font-size:clamp(9px,2.6vw,13px);padding:7px 6px;border-top:4px solid #72563F;letter-spacing:.5px}
+button{font:inherit;cursor:pointer}
+.btn{background:#8BAA8B;color:#242A26;border:3px solid #F4EBDD;box-shadow:4px 4px 0 #000;padding:10px 16px;font-weight:bold;margin:6px 6px 6px 0}
+.btn:hover{background:#D8C6A5}.sm{padding:4px 10px;font-size:12px;margin:0 0 0 4px;box-shadow:2px 2px 0 #000}
+button:focus-visible{outline:4px solid #F4C430;outline-offset:2px}
+h1{font-size:clamp(20px,5vw,32px);margin:14px 0 6px;color:#F4C430;line-height:1.2}
+h2{font-size:18px;margin:0 0 8px}h3{margin:0 0 6px;color:#8A354B}
+.stage{position:relative;height:clamp(190px,34vw,270px);border:4px solid #F4EBDD;box-shadow:6px 6px 0 #000;background:linear-gradient(var(--w) 0 66%,var(--f) 66% 100%);overflow:hidden}
+.stage::before{content:"";position:absolute;left:8%;top:14%;width:70px;height:46px;background:var(--a);border:4px solid #242A26;box-shadow:inset 0 -12px 0 rgba(255,255,255,.3)}
+.stage::after{content:"";position:absolute;left:40%;top:20%;width:42px;height:30px;background:var(--a);border:4px solid #242A26}
+.lbl{position:absolute;top:6px;right:6px;background:#242A26;color:#F4EBDD;padding:2px 8px;font-size:12px;z-index:2}
+.chars{position:absolute;left:0;right:0;bottom:5%;display:flex;justify-content:space-between;align-items:flex-end;padding:0 4%}
+.others{display:flex;gap:2px}
+.ch{text-align:center;opacity:.78}.ch.on{opacity:1;transform:translateY(-6px)}
+.ch svg{width:clamp(50px,13vw,104px);height:auto;display:block;margin:auto}
+.ch b{display:block;background:#242A26;color:#F4EBDD;font-size:10px;padding:0 4px}
+.dlg,.panel,.card{background:#F4EBDD;color:#242A26;border:4px solid #242A26;box-shadow:6px 6px 0 #000;padding:12px 14px;margin-top:14px}
+.dlg.nar{background:#D8C6A5;font-style:italic}
+.who{font-weight:bold;color:#8A354B}.tag{font-size:12px;color:#72563F;margin-bottom:4px}
+.opt{display:block;width:100%;text-align:left;background:#fff;color:#242A26;border:3px solid #242A26;padding:10px;margin:8px 0;box-shadow:3px 3px 0 #72563F}
+.opt:hover:not(:disabled){background:#D8C6A5}
+.opt span{display:inline-block;background:#214E3D;color:#F4EBDD;padding:0 8px;margin-right:8px}
+.opt:disabled{opacity:.6;cursor:default}
+.fade{animation:f .35s}@keyframes f{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.ch{cursor:pointer}.ch svg{animation:idle 1.2s steps(2) infinite}.ch.on svg{animation:talk .3s steps(2) infinite}
+@keyframes idle{50%{transform:translateY(-2px)}}@keyframes talk{50%{transform:translateY(-5px)}}
+.ch.hop{animation:hop .4s}@keyframes hop{40%{transform:translateY(-22px) rotate(-4deg)}}
+.opt{transition:transform .08s}.opt:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:5px 5px 0 #72563F}.opt:active:not(:disabled){transform:translate(2px,2px);box-shadow:1px 1px 0 #72563F}
+.opt.sel{background:#8BAA8B;opacity:1;transform:scale(1.02)}.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #000}
+.bar{background:#ddd;height:12px;border:2px solid #242A26;margin:2px 0 8px}.bar i{display:block;height:100%;background:#214E3D}
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:20;padding:10px}
+.title{text-align:center}.title h1{font-family:var(--logo);font-size:clamp(26px,7vw,46px);margin:16px 0 0}.title h2{color:#D88FA4;font-size:clamp(18px,4.5vw,28px)}
+.badge{display:inline-block;background:#214E3D;color:#F4EBDD;border:2px solid #F4C430;padding:2px 8px;margin:2px}
+
+/* ===== MEJORAS VISUALES ===== */
+:root{--px:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--logo:"Pixelify Sans","Atkinson Hyperlegible",system-ui,sans-serif}
+body{background-color:#16233a;background-image:radial-gradient(circle at 50% -10%,#2b4468 0,transparent 60%),linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:100% 100%,24px 24px,24px 24px;background-attachment:fixed}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:30;background:repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0 1px,transparent 1px 3px)}
+header{position:sticky;top:0;z-index:15;box-shadow:0 4px 0 #000}
+header b{font-family:var(--logo);font-size:16px;letter-spacing:1px;color:#F4C430;text-shadow:2px 2px 0 #000}
+#prog{height:8px;background:#0b1422;border-bottom:2px solid #000;position:sticky;top:0;z-index:14}
+#prog i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,#F4C430 0 10px,#d9a91c 10px 12px);transition:width .5s steps(10)}
+.btn,.opt span,.who,.lbl,.tag,.badge{font-family:var(--px)}
+.btn{font-size:15px;font-weight:700;letter-spacing:.5px;line-height:1.3;text-transform:uppercase;background:linear-gradient(#a3c2a3,#8BAA8B 55%,#6f8f6f);box-shadow:4px 4px 0 #000,inset 0 -4px 0 rgba(0,0,0,.2),inset 0 3px 0 rgba(255,255,255,.35)}
+.btn.sm{font-size:12px}
+#nx{animation:pulse 1s steps(2) infinite}
+@keyframes pulse{50%{box-shadow:4px 4px 0 #000,0 0 0 3px #F4C430}}
+h1,h2,h3{font-family:var(--px);line-height:1.3;font-weight:700}
+h1{font-size:clamp(20px,4.6vw,28px);text-shadow:3px 3px 0 #000}
+h2{font-size:clamp(17px,3.4vw,21px)}
+h3{font-size:17px;color:#8A354B}
+.title h1{font-family:var(--logo);font-size:clamp(30px,7.4vw,52px);text-shadow:4px 4px 0 #8A354B,7px 7px 0 #000;margin:22px 0 10px}
+.title h2{font-size:clamp(16px,4vw,26px);letter-spacing:3px;color:#D88FA4;text-shadow:2px 2px 0 #000;letter-spacing:2px}
+.blink{animation:blink 1.1s steps(2) infinite;color:#F4C430;font-weight:bold;margin:16px 0}
+@keyframes blink{50%{opacity:.25}}
+.stage{background:repeating-linear-gradient(90deg,rgba(0,0,0,.09) 0 36px,rgba(255,255,255,.05) 36px 72px) bottom/100% 34% no-repeat,linear-gradient(var(--w) 0 66%,var(--f) 66% 100%);box-shadow:6px 6px 0 #000,inset 0 0 50px rgba(0,0,0,.28)}
+.stage::before{box-shadow:inset 0 -12px 0 rgba(255,255,255,.3),inset 0 0 0 4px rgba(255,255,255,.25)}
+.lbl{font-size:12px;background:#242A26;border:2px solid #F4C430;color:#F4C430}
+.ch svg{filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}
+.ch b{font-family:var(--px);font-size:11px;padding:3px 5px;margin-top:2px;border:2px solid #F4EBDD}
+.ch.on b{background:#8A354B}
+.dlg{position:relative;margin-top:30px;padding-top:18px;font-size:17px;border-image:none;box-shadow:6px 6px 0 #000,inset 0 0 0 3px #D8C6A5}
+.who{position:absolute;top:-19px;left:12px;background:#8A354B;color:#F4EBDD;font-size:15px;font-weight:700;padding:6px 10px;border:3px solid #242A26;box-shadow:3px 3px 0 #000}
+.dlg.nar{box-shadow:6px 6px 0 #000,inset 0 0 0 3px #F4EBDD}
+.dlg p{min-height:3.2em}
+.panel{box-shadow:6px 6px 0 #000,inset 0 0 0 3px #D8C6A5}
+.card{border-top:14px solid #214E3D;box-shadow:6px 6px 0 #000,inset 0 0 0 3px #D8C6A5}
+.tag{font-size:13px;line-height:1.4;color:#72563F}
+.opt{font-size:16px;box-shadow:3px 3px 0 #72563F,inset 0 0 0 2px #eee}
+.opt span{font-size:15px;font-weight:700;padding:5px 9px;margin-right:10px;box-shadow:2px 2px 0 #000}
+.badge{font-size:14px;padding:6px 8px;border-width:3px;box-shadow:2px 2px 0 #000;background:#214E3D}
+.bar{height:16px;border:3px solid #242A26;background:repeating-linear-gradient(90deg,#ddd 0 8px,#cfcfcf 8px 10px)}
+.bar i{background:repeating-linear-gradient(90deg,#2f7a5a 0 8px,#214E3D 8px 10px);transition:width .6s steps(8)}
+.modal .panel{border-top:14px solid #8A354B}
+footer{font-family:var(--px);font-size:clamp(10px,2.6vw,14px);box-shadow:0 -4px 0 #000}
+
+.ch svg{filter:drop-shadow(1px 0 0 #111) drop-shadow(-1px 0 0 #111) drop-shadow(0 1px 0 #111) drop-shadow(0 -1px 0 #111) drop-shadow(0 5px 0 rgba(0,0,0,.35))}
+.lid{opacity:0;animation:lid 4.2s infinite}@keyframes lid{0%,92%,100%{opacity:0}95%{opacity:1}}
+
+/* ===== ÚLTIMO PULIDO VISUAL ===== */
+.stage::before,.stage::after{display:none}
+.deco{position:absolute;left:0;top:0;width:100%;height:66%;display:block;shape-rendering:crispEdges}
+.stage::after{display:none}
+.dlg{display:flex;gap:14px;align-items:flex-start}
+.dt{flex:1;min-width:0}
+.port{flex:none;width:clamp(56px,15vw,84px);aspect-ratio:1;border:3px solid #242A26;background:linear-gradient(#D8C6A5,#bfa982);box-shadow:3px 3px 0 #000;overflow:hidden;margin-top:2px}
+.port svg{width:100%;height:100%;display:block}
+.stars{font-size:clamp(30px,8vw,46px);color:#F4C430;letter-spacing:8px;text-shadow:3px 3px 0 #000;margin:8px 0 2px}
+body::before{content:"";position:fixed;left:0;top:0;width:3px;height:3px;background:#fff;z-index:-1;pointer-events:none;animation:tw 3s steps(2) infinite;box-shadow:8vw 14vh #fff,19vw 36vh #F4C430,27vw 8vh #fff,36vw 62vh #fff,44vw 22vh #F4C430,53vw 80vh #fff,61vw 12vh #fff,68vw 48vh #F4C430,76vw 70vh #fff,83vw 26vh #fff,91vw 55vh #F4C430,95vw 9vh #fff,12vw 84vh #fff,48vw 46vh #fff,72vw 90vh #fff}
+@keyframes tw{50%{opacity:.35}}
+.card h3{border-bottom:3px dotted #D8C6A5;padding-bottom:6px;margin-bottom:8px}
+.opt{border-left-width:8px}
+.opt:hover:not(:disabled){border-left-color:#8A354B}
+.btn:focus-visible,.opt:focus-visible{outline-offset:3px}
+</style></head><body>
+<header><b>Ecomoda EN 8 BITS</b><div><button class="btn sm" id="hHome">INICIO</button><button class="btn sm" id="hReset">REINICIAR</button></div></header>
+<div id="prog" aria-hidden="true"><i></i></div>
+<main id="app"></main>
+<footer>UNIVERSIDAD DE PAMPLONA - ESTUDIANTES DE PSICOLOGÍA</footer>
+<script>
+"use strict";
+const app=document.getElementById("app");
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const clamp=v=>Math.max(0,Math.min(100,v));
+const CATN={A:"Asertiva",P:"Pasiva",G:"Agresiva",M:"Pasivo-agresiva"};
+const DIM=["Claridad","Respeto","Límites","Escucha","Negociación"],DK=["clarity","respect","boundaries","listening","negotiation"];
+let RUN=0;
+const setProg=n=>{const b=document.querySelector('#prog i');if(b)b.style.width=(n/12*100)+'%'};
+
+/* ===== GameState ===== */
+const GameState={fresh:()=>({currentChapter:0,currentChallenge:0,stepIndex:0,selectedAnswers:{},challengeResults:{},chapterResults:{},totalScore:0,
+ relationships:{Armando:50,Marcela:50,Hugo:50,Patricia:50},indicators:{clarity:50,respect:50,boundaries:50,listening:50,negotiation:50},
+ tension:20,pendingTasks:0,unresolvedConflicts:0,completedAgreements:0,flags:{},unlockedBadges:[],completedChapters:[],ending:null})};
+let G=GameState.fresh();
+
+/* ===== SceneRenderer ===== */
+const SC={entrada:["Entrada de EcoModa","#8BAA8B","#72563F","#214E3D"],recepcion:["Recepción y área administrativa","#F4EBDD","#D8C6A5","#8BAA8B"],escritorio:["Escritorio de Betty","#D8C6A5","#72563F","#8BAA8B"],oficina:["Oficina de Armando","#263A53","#72563F","#8A354B"],estudio:["Estudio de diseño","#D88FA4","#D8C6A5","#7752A1"],sala:["Sala de reuniones","#8BAA8B","#72563F","#263A53"],pasillo:["Pasillo de la empresa","#D8C6A5","#8BAA8B","#72563F"],presentacion:["Espacio de presentación","#8A354B","#263A53","#F4EBDD"]};
+const CH={Betty:{n:"Betty",s:"#E8B98F",d:"#c99770",h:"#3a241a"},Armando:{n:"Armando",s:"#E3B58C",d:"#c4936a",h:"#1d1d1d"},Marcela:{n:"Marcela",s:"#EBC09A",d:"#cc9e78",h:"#4a2a18"},Hugo:{n:"Hugo",s:"#DDA97E",d:"#bd885d",h:"#7a4a2a",e:"#5a3a22"},Patricia:{n:"Patricia",s:"#F0C9A5",d:"#d3a984",h:"#E8CB72",e:"#b08a3a"}};
+const DECO=(()=>{const r=(x,y,w,h,f)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`,
+ win=(x,y)=>r(x-2,y-2,28,24,"#242A26")+r(x,y,24,20,"#bfe3f2")+r(x,y+11,24,9,"#9fd0e6")+r(x+11,y,2,20,"#242A26")+r(x,y+9,24,2,"#242A26")+r(x+2,y+2,4,2,"#fff")+r(x-3,y+22,30,2,"#D8C6A5"),
+ plant=x=>r(x,48,10,12,"#a0522d")+r(x-1,46,12,3,"#7a3d1f")+r(x+4,34,2,12,"#2E7D4F")+r(x,36,5,4,"#3a9a60")+r(x+5,30,5,4,"#3a9a60")+r(x+1,28,4,3,"#2E7D4F")+r(x+6,38,5,4,"#2E7D4F"),
+ desk=(x,w,t)=>r(x,t,w,3,"#D8C6A5")+r(x+2,t+3,w-4,57-t,"#72563F")+r(x+5,t+6,12,54-t-2,"#5a4130")+r(x+w-17,t+6,12,54-t-2,"#5a4130"),
+ mon=(x,t)=>r(x,t-14,16,11,"#242A26")+r(x+1,t-13,14,8,"#8BAA8B")+r(x+3,t-11,6,1,"#214E3D")+r(x+3,t-9,9,1,"#214E3D")+r(x+6,t-3,4,2,"#242A26")+r(x+4,t-1,8,1,"#242A26"),
+ books=(x,y,n)=>{const c=["#8A354B","#2E7D4F","#263A53","#F4C430","#7752A1","#D88FA4"];let o="";for(let i=0;i<n;i++)o+=r(x+i*4,y+(i%3),3,12-(i%3),c[i%6]);return o},
+ sign=(x,y,w,t)=>r(x,y,w,9,"#214E3D")+r(x,y,w,1,"#F4C430")+`<text x="${x+w/2}" y="${y+7}" text-anchor="middle" font-size="6" font-weight="700" fill="#F4C430" font-family="Pixelify Sans,sans-serif">${t}</text>`,
+ door=x=>r(x,14,24,46,"#242A26")+r(x+2,16,20,44,"#8A5A3C")+r(x+4,19,7,16,"#72563F")+r(x+13,19,7,16,"#72563F")+r(x+4,38,7,18,"#72563F")+r(x+13,38,7,18,"#72563F")+r(x+17,36,3,3,"#F4C430")+r(x+6,8,12,4,"#F4EBDD"),
+ dummy=(x,c)=>r(x+7,50,2,10,"#242A26")+r(x+2,59,12,1,"#242A26")+r(x+6,24,4,5,"#D8C6A5")+r(x+3,29,10,14,c)+r(x+4,43,8,7,c)+r(x+11,29,2,14,"rgba(0,0,0,.2)"),
+ curtain=x=>r(x,0,26,60,"#5c1f30")+r(x+5,0,3,60,"#7a2d41")+r(x+12,0,3,60,"#7a2d41")+r(x+19,0,3,60,"#7a2d41");
+ let rack="",chairs="",shelf="";
+ ["#D88FA4","#8A354B","#7752A1","#2E7D4F","#F4C430","#263A53","#C0272D"].forEach((c,i)=>rack+=r(112+i*9,24,7,16+(i%3)*4,c)+r(115+i*9,22,1,2,"#242A26"));
+ [44,76,108,140].forEach(x=>chairs+=r(x,34,10,8,"#263A53")+r(x+1,35,8,2,"#3a5578"));
+ for(let i=0;i<3;i++)shelf+=r(12,6+i*18,42,16,"#3b2a1d")+books(14,8+i*18,10);
+ const S={
+ entrada:win(14,10)+win(162,10)+sign(70,3,60,"ECOMODA")+r(84,12,32,48,"#242A26")+r(86,14,28,46,"#8A5A3C")+r(89,17,10,18,"#72563F")+r(101,17,10,18,"#72563F")+r(89,38,10,18,"#72563F")+r(101,38,10,18,"#72563F")+r(107,36,3,3,"#F4C430")+plant(52)+plant(138),
+ recepcion:win(14,10)+win(162,10)+sign(78,8,44,"ECOMODA")+desk(52,96,40)+mon(70,40)+r(112,38,10,2,"#fff")+r(126,35,5,5,"#8A354B")+plant(30)+plant(160),
+ escritorio:win(22,10)+r(150,10,18,22,"#F4EBDD")+r(150,10,18,5,"#8A354B")+r(153,19,3,3,"#242A26")+r(159,19,3,3,"#242A26")+r(153,25,3,3,"#242A26")+r(159,25,3,3,"#C0272D")+r(100,18,38,2,"#72563F")+books(102,6,9)+desk(60,84,44)+mon(80,44)+r(102,41,14,3,"#fff")+r(119,40,4,4,"#8A354B")+r(132,34,1,10,"#242A26")+r(128,30,9,4,"#F4C430"),
+ oficina:r(10,4,46,56,"#5a4130")+shelf+r(70,8,24,16,"#F4C430")+r(72,10,20,12,"#263A53")+r(76,14,6,6,"#8BAA8B")+win(150,8)+desk(78,90,44)+mon(104,44),
+ estudio:dummy(30,"#2E7D4F")+dummy(60,"#8A354B")+r(86,8,22,16,"#F4EBDD")+r(89,12,16,1,"#8A354B")+r(89,16,12,1,"#263A53")+r(89,20,14,1,"#2E7D4F")+r(108,22,66,2,"#242A26")+r(108,22,2,38,"#242A26")+r(172,22,2,38,"#242A26")+rack,
+ sala:r(58,5,84,28,"#242A26")+r(60,7,80,24,"#F4EBDD")+r(66,12,36,2,"#263A53")+r(66,18,40,2,"#8A354B")+r(66,24,28,2,"#2E7D4F")+r(112,22,4,6,"#2E7D4F")+r(118,18,4,10,"#F4C430")+r(124,14,4,14,"#8A354B")+chairs+r(30,42,140,4,"#D8C6A5")+r(32,46,136,3,"#72563F")+r(40,49,3,11,"#5a4130")+r(157,49,3,11,"#5a4130")+r(60,40,10,2,"#fff")+r(120,40,10,2,"#fff")+r(95,38,4,4,"#8A354B"),
+ pasillo:door(22)+door(88)+door(154)+plant(60)+plant(124),
+ presentacion:`<polygon points="52,0 72,0 92,60 28,60" fill="rgba(255,240,180,.14)"/><polygon points="128,0 148,0 172,60 108,60" fill="rgba(255,240,180,.14)"/>`+r(58,8,84,22,"#242A26")+r(60,10,80,18,"#F4EBDD")+`<text x="100" y="21" text-anchor="middle" font-size="9" font-weight="700" fill="#214E3D" font-family="Pixelify Sans,sans-serif">ECOMODA</text><text x="100" y="26" text-anchor="middle" font-size="3.6" font-weight="700" fill="#8A354B" font-family="Atkinson Hyperlegible,sans-serif">COLECCIÓN SOSTENIBLE</text>`+curtain(0)+curtain(174)+r(0,0,200,6,"#4a1827")+r(0,6,200,2,"#F4C430")+r(92,42,16,18,"#72563F")+r(90,40,20,3,"#D8C6A5")+r(99,34,2,6,"#242A26")+r(98,32,4,3,"#242A26")};
+ return sc=>`<svg class="deco" viewBox="0 0 200 60" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${S[sc]||""}</svg>`})();
+const SceneRenderer={
+ sprite(k,vb){const c=CH[k],K="#1b1b1b",W="#F4EBDD",M="#a23e52",r=(x,y,w,h,f)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
+  const P={Betty:{t:"#2E7D4F",td:"#245f3c",b:"#C9B48C",bd:"#a8946b",sh:"#5b3b2a"},Armando:{t:"#263A53",td:"#1b2b3f",b:"#1d2a3c",bd:"#141e2b",sh:K},Marcela:{t:"#8A354B",td:"#6b2739",b:"#2a2f3a",bd:"#1d212a",sh:"#3a2a2a"},Hugo:{t:"#7752A1",td:"#5c3d80",b:"#3b4a6b",bd:"#2c3850",sh:W},Patricia:{t:"#C0272D",td:"#8c1b20",b:"#C0272D",bd:"#8c1b20",sh:"#1b1b1b"}}[k],eb=c.e||c.h;
+  let o="";
+  if(k=="Betty")o+=r(5,6,2,11,c.h)+r(17,6,2,11,c.h);
+  if(k=="Marcela")o+=r(5,5,14,17,c.h)+r(4,12,2,9,c.h)+r(18,12,2,9,c.h);
+  if(k=="Patricia")o+=r(5,5,14,17,c.h)+r(4,12,2,9,c.h)+r(18,12,2,9,c.h)+r(4,21,3,2,c.h)+r(17,21,3,2,c.h);
+  if(k=="Betty"||k=="Patricia")o+=r(9,30,2,2,c.s)+r(13,30,2,2,c.s);else o+=r(8,28,3,4,P.b)+r(13,28,3,4,P.bd);
+  o+=r(7,32,4,2,P.sh)+r(13,32,4,2,P.sh);
+  o+=r(6,18,12,10,P.t)+r(15,18,3,10,P.td)+r(4,19,2,8,P.t)+r(18,19,2,8,P.td)+r(4,27,2,2,c.s)+r(18,27,2,2,c.s);
+  if(k=="Betty"||k=="Patricia")o+=r(6,26,12,5,P.b)+r(15,26,3,5,P.bd);
+  if(k=="Betty")o+=r(2,24,4,6,"#72563F")+r(3,25,2,4,W)+r(3,26,2,1,"#8BAA8B");
+  if(k=="Patricia")o+=r(6,25,12,1,"#F4C430")+r(2,26,3,3,"#D88FA4")+r(2,25,3,1,"#8A354B");
+  o+=r(10,16,4,3,c.d)+r(7,6,10,9,c.s)+r(8,5,8,1,c.s)+r(8,15,8,1,c.s)+r(9,16,6,1,c.s)+r(16,7,1,8,c.d)+r(6,10,1,3,c.s)+r(17,10,1,3,c.d);
+  if(k=="Betty")o+=r(9,18,6,2,W)+r(11,20,2,1,W);
+  if(k=="Armando")o+=r(10,18,4,5,W)+r(11,19,2,7,"#C0272D")+r(11,19,2,1,"#8c1b20")+r(9,18,1,7,P.td)+r(14,18,1,7,P.td);
+  if(k=="Marcela")o+=r(10,18,4,5,W)+r(9,18,1,8,P.td)+r(14,18,1,8,P.td)+r(12,23,1,1,"#F4C430");
+  if(k=="Hugo")o+=r(8,17,8,1,"#F4C430")+r(8,18,1,7,"#F4C430")+r(15,18,1,7,"#F4C430")+r(8,20,1,1,K)+r(8,22,1,1,K)+r(15,20,1,1,K)+r(15,22,1,1,K);
+  if(k=="Patricia")o+=r(10,18,4,2,c.s)+r(11,20,2,1,c.s)+r(9,18,1,1,W)+r(10,19,1,1,W)+r(11,20,2,1,W)+r(13,19,1,1,W)+r(14,18,1,1,W);
+  o+=r(8,8,3,1,eb)+r(13,8,3,1,eb)+r(8,10,3,2,"#fff")+r(9,10,2,2,"#2b1d14")+r(9,10,1,1,"#fff")+r(13,10,3,2,"#fff")+r(13,10,2,2,"#2b1d14")+r(13,10,1,1,"#fff")+r(12,11,1,1,c.d);
+  o+=`<g class="lid">${r(8,10,3,2,c.s)+r(13,10,3,2,c.s)}</g>`;
+  o+=r(11,13,2,1,M)+r(10,12,1,1,M)+r(13,12,1,1,M)+r(8,12,2,1,"#e8998a")+r(14,12,2,1,"#e8998a");
+  if(k=="Betty")o+=r(7,4,10,2,c.h)+r(7,6,2,4,c.h)+r(15,6,2,4,c.h)+r(8,6,5,1,c.h)+r(10,1,4,3,c.h)+r(9,2,6,2,c.h)+`<g fill="none" stroke="#111" stroke-width=".6"><rect x="7.7" y="9.3" width="3.6" height="2.9"/><rect x="12.7" y="9.3" width="3.6" height="2.9"/><path d="M11.3 10.4H12.7"/></g>`;
+  if(k=="Patricia")o+=r(11,13,2,1,"#C0272D")+r(6,12,1,1,W)+r(17,12,1,1,W);
+  if(k=="Armando")o+=r(8,3,8,1,c.h)+r(7,4,10,3,c.h)+r(6,5,1,3,c.h)+r(17,5,1,3,c.h)+r(6,8,1,2,"#8a8a8a")+r(17,8,1,2,"#8a8a8a");
+  if(k=="Marcela")o+=r(7,4,10,3,c.h)+r(6,5,2,8,c.h)+r(16,5,2,8,c.h)+r(9,6,4,1,c.h)+r(6,12,1,2,"#F4C430")+r(17,12,1,2,"#F4C430");
+  if(k=="Hugo")o+=r(9,5,3,1,"#f3d2b0")+r(8,6,1,1,"#f3d2b0");
+  if(k=="Patricia")o+=r(7,4,10,3,c.h)+r(6,5,2,8,c.h)+r(16,5,2,8,c.h)+r(7,6,3,2,c.h)+r(13,6,4,1,c.h)+r(7,5,10,1,"#D88FA4")+r(16,3,3,3,"#D88FA4")+r(17,4,1,1,W);
+  return `<svg viewBox="${vb||"0 0 24 34"}" shape-rendering="crispEdges" role="img" aria-label="${c.n}">${o}</svg>`},
+ chr(k,a){return `<div class="ch${norm(k)==a?" on":""}">${this.sprite(k)}<b>${CH[k].n}</b></div>`},
+ stage(sc,cast,act){act=norm(act||"");const s=SC[sc];return `<div class="stage" style="--w:${s[1]};--f:${s[2]};--a:${s[3]}">${DECO(sc)}<div class="lbl">${s[0]}</div><div class="chars">${this.chr("Betty",act)}<div class="others">${cast.map(k=>this.chr(k,act)).join("")}</div></div></div>`}
+};
+
+/* ===== ChallengeData: [texto, cat, puntos, dims(claridad,respeto,límites,escucha,negociación), explicación, consecuencia, efectos] ===== */
+const ChallengeData=[
+{n:"Una interrupción durante la reunión",sc:"sala",cast:["Patricia"],
+ lines:[["Betty","La reunión con los proveedores quedó para las diez y media. Después tenemos que revisar los documentos de la presentación…"],["Patricia","Espera, antes de que sigas, creo que deberíamos cambiar todo el horario. Mi propuesta es más importante y tenemos que verla ahora."],["Narrador","Patricia comienza a explicar su idea mientras Betty todavía está hablando."]],
+ q:"¿Qué puede hacer Betty ante esta interrupción?",tr:"Marcela revisa la documentación y solicita a Betty que la acompañe a buscar unos materiales.",
+ o:[["«Patricia, ¿puedes dejarme terminar la información y después revisamos tu propuesta?».","A",100,"22212","Pedir que te permitan terminar es una forma directa de defender tu espacio de participación sin descalificar a la otra persona.","Patricia hace una pausa y escucha el resto de la información.",{a:1,t:-3,r:{Patricia:4},f:"c1r1_boundary"}],
+ ["Betty deja de hablar y permite que Patricia continúe. Más tarde intentará explicar los horarios por correo.","P",45,"10010","Evitar la interrupción puede reducir la tensión inmediata, pero también puede impedir que tu información sea escuchada.","La agenda queda parcialmente explicada y aumenta el riesgo de confusión; Betty anota una tarea de aclaración.",{p:1,t:2}],
+ ["«Si no me dejas hablar, no tiene sentido que yo prepare nada para esta reunión».","G",30,"10100","La frustración puede ser legítima, pero condicionar la colaboración de manera confrontativa puede desviar la conversación del problema.","Patricia responde con evidente molestia y el ambiente se tensa.",{t:8,r:{Patricia:-8}}],
+ ["«Está bien, habla tú primero. Yo ya veré cómo me las arreglo con la agenda».","M",70,"11011","Elemento adecuado: Betty no confronta y la reunión sigue su curso. A mejorar: la frase deja ver molestia de forma indirecta, con un tono resignado, en lugar de pedir con claridad que le permitan terminar.","Patricia continúa, pero percibe el tono; la interrupción queda sin aclarar y la molestia de Betty se queda en el ambiente.",{u:1}]]},
+{n:"Un comentario incómodo",sc:"pasillo",cast:["Hugo"],
+ lines:[["Narrador","Hugo se acerca mientras Betty organiza unos documentos."],["Hugo","Con tantas reuniones y tanto papeleo, no sé cómo haces para estar pendiente de todo. Aunque, bueno, con esa cara tan seria parece que siempre estuvieras regañando a alguien."],["Narrador","Betty se siente incómoda con el comentario."]],
+ q:"¿Cómo puede responder Betty ante un comentario sobre su apariencia o expresión que le resulta incómodo?",tr:"Betty regresa a su escritorio. Marcela envía una nueva propuesta para reorganizar la agenda.",
+ o:[["«No tienes que comentar mi cara. Mejor ocúpate de tus diseños».","G",30,"10100","Defender un límite no requiere atacar a la otra persona. La respuesta puede generar una disputa sobre quién tiene la razón.","Hugo se pone a la defensiva y el ambiente se vuelve tenso.",{t:8,u:1,r:{Hugo:-8}}],
+ ["«Prefiero que no hagas comentarios sobre mi apariencia. Si hay algo de mi trabajo que quieras señalar, podemos hablarlo».","A",100,"22212","La respuesta identifica el límite y ofrece una alternativa para conversar sobre asuntos laborales pertinentes.","Hugo reconoce el límite y cambia de tema, algo sorprendido.",{a:1,t:-3,r:{Hugo:3},f:"c1r2_boundary"}],
+ ["Betty sonríe para quitarle importancia al comentario y cambia de tema.","P",45,"00010","Cambiar de tema puede proteger la interacción inmediata, pero no comunica claramente que el comentario fue incómodo.","La conversación termina sin confrontación, aunque Betty sigue sintiéndose incómoda.",{u:1}],
+ ["«¿Eso qué tiene que ver con los documentos? Estoy trabajando».","A",90,"21201","La respuesta redirige la conversación al trabajo y marca un límite de manera breve. Puede ser adecuada cuando se necesita una intervención directa.","Hugo deja de comentar y vuelve a su tarea.",{t:-1,r:{Hugo:1}}]]},
+{n:"Un desacuerdo sobre la organización",sc:"recepcion",cast:["Marcela"],
+ lines:[["Marcela","Necesitamos adelantar la reunión con los proveedores y moverla a las nueve. Así ganamos tiempo para revisar los materiales."],["Betty","A las nueve está confirmada una reunión con el equipo de producción. Si cambiamos el horario, tendremos que avisarles y revisar la disponibilidad."],["Marcela","Entonces resuélvelo. La colección no puede esperar."]],
+ q:"¿Cómo puede Betty expresar su desacuerdo y buscar una solución?",tr:"La agenda empieza a reorganizarse. Patricia se acerca con una petición de última hora.",
+ o:[["«Está bien. Cambio la reunión y después vemos qué hacemos con producción».","P",40,"00010","Aceptar el cambio sin comprobar las condiciones puede generar nuevos problemas de coordinación.","Se produce un cruce de agenda con producción que deberá resolverse más adelante.",{u:1,p:1,r:{Marcela:2}}],
+ ["«Ese cambio no tiene sentido. Ya deberías saber que tenemos una reunión confirmada».","G",25,"10100","La descalificación dificulta resolver el desacuerdo y puede provocar una reacción defensiva.","Marcela se molesta y la conversación pierde cooperación.",{t:8,r:{Marcela:-8}}],
+ ["«Podemos adelantarla, pero antes necesito confirmar si producción puede cambiar su horario. Si no, revisemos otra alternativa».","A",95,"22122","La respuesta comunica una limitación y propone verificar la información antes de decidir.","Betty verifica la disponibilidad de producción antes de modificar el calendario.",{a:1,t:-2,r:{Marcela:3},f:"c1r3_planning"}],
+ ["«Tenemos una reunión confirmada a las nueve. ¿Qué te parece si revisamos otro horario para evitar que se crucen las actividades?».","A",100,"22122","La propuesta combina claridad y negociación, y busca evitar que dos compromisos entren en conflicto.","Marcela acepta revisar otra franja horaria.",{a:1,t:-3,r:{Marcela:5},f:"c1r3_agreement"}]]},
+{n:"Un favor que excede la disponibilidad",sc:"escritorio",cast:["Patricia"],
+ lines:[["Patricia","¿Puedes ayudarme a organizar las fichas de los diseños? Tengo que terminar otras cosas y sé que tú eres rápida con los documentos."],["Betty","Tengo que cerrar la agenda de Armando y preparar las actas de la reunión."],["Patricia","Solo necesito que me ayudes un momento. No creo que te tome tanto."]],
+ q:"¿Cómo puede Betty responder sin asumir automáticamente una tarea adicional ni descalificar a Patricia?",tr:"",
+ o:[["«Bueno, pásamelas. Después veo cómo termino lo mío».","P",40,"00010","Aceptar una tarea adicional sin revisar la disponibilidad puede generar sobrecarga y compromisos difíciles de cumplir.","Betty recibe las fichas y su carga de tareas aumenta.",{p:2,r:{Patricia:2},f:"c1r4_overload"}],
+ ["«No puedo encargarme ahora de las fichas porque debo cerrar la agenda y las actas. Si quieres, revisamos qué parte puedes organizar tú».","A",100,"22212","La respuesta expresa una limitación concreta y propone una alternativa de colaboración.","Patricia acepta revisar qué parte puede resolver por su cuenta.",{a:1,r:{Patricia:3},f:"c1r4_boundary"}],
+ ["«Siempre haces lo mismo. Deberías aprender a organizarte».","G",20,"10100","La crítica personal desplaza la conversación desde la tarea hacia el comportamiento de Patricia.","Patricia se molesta y evita pedir aclaraciones por el momento.",{t:8,u:1,r:{Patricia:-8}}],
+ ["«Ahora estoy ocupada. Si todavía necesitas ayuda cuando termine las actas, revisamos cuánto puedo apoyar».","A",95,"22122","La respuesta establece una condición realista para ayudar y evita prometer disponibilidad inmediata.","La ayuda queda condicionada a la disponibilidad real de Betty: un acuerdo parcial.",{a:1,r:{Patricia:2}}]]},
+{n:"Tres tareas urgentes",sc:"escritorio",cast:["Armando"],
+ lines:[["Armando","Necesito que prepares el informe de proveedores, confirmes las reuniones y organices los documentos de la presentación. Todo debe quedar listo hoy."],["Betty","Tengo pendientes las actas de ayer y una agenda que todavía no está confirmada."],["Armando","Entiendo, pero todo es importante. Necesito que avances."]],
+ q:"¿Qué puede hacer Betty ante varias tareas urgentes con una misma fecha de entrega?",tr:"",
+ o:[["«Las hago todas hoy. Me organizaré para que alcance el tiempo».","P",35,"00010","La disposición a colaborar no elimina los límites de tiempo. Aceptar todo sin priorizar puede generar compromisos incumplidos.","Betty se compromete con todo y empiezan a acumularse documentos sin terminar.",{p:2,t:2,r:{Armando:2}}],
+ ["«No puedo hacer tres cosas a la vez. Tendrás que decidir qué quieres realmente».","G",25,"10100","La respuesta expresa frustración, pero la confrontación dificulta negociar las prioridades.","Armando responde con tensión; la conversación necesitará una aclaración posterior.",{t:8,u:1,r:{Armando:-8}}],
+ ["«Puedo avanzar con todo, pero necesito que definamos qué debe quedar terminado primero y qué puede esperar».","A",100,"22122","Acordar prioridades permite organizar el trabajo según su urgencia y viabilidad.","Se establece qué debe quedar primero y la carga simultánea se reduce.",{a:1,t:-3,r:{Armando:4}}],
+ ["«Tengo las actas y la agenda pendientes. ¿Cuál de estas tareas necesitas primero? Con eso organizo el resto».","A",100,"22222","Preguntar qué tarea va primero facilita una decisión concreta y evita asumir que todo puede hacerse simultáneamente.","Armando prioriza una de las entregas y Betty organiza el resto.",{a:1,t:-2,r:{Armando:4}}]]},
+{n:"Una crítica poco constructiva",sc:"estudio",cast:["Hugo"],
+ lines:[["Narrador","Betty ha preparado un documento con las citas y los horarios de la presentación."],["Hugo","Este documento está mal organizado. Así nadie va a entender nada."],["Betty","¿Qué parte necesitas que revise?"],["Hugo","Pues todo. Se supone que esto debería quedar claro."]],
+ q:"¿Cómo puede Betty responder a una crítica que no identifica con precisión qué debe corregirse?",tr:"",
+ o:[["«Si me señalas qué información falta o qué apartado resulta confuso, puedo corregirlo».","A",100,"22222","Solicitar ejemplos transforma una crítica general en información útil para corregir.","Hugo señala una observación concreta sobre el orden de los horarios.",{a:1,r:{Hugo:4}}],
+ ["«Si tan fácil es hacerlo mejor, organízalo tú».","G",20,"10100","La respuesta ataca a la otra persona y puede convertir un problema técnico en un conflicto interpersonal.","Hugo se pone a la defensiva y la corrección se retrasa.",{t:8,p:1,r:{Hugo:-8}}],
+ ["Betty guarda silencio, toma el documento y decide rehacerlo completo sin pedir más información.","P",40,"00010","Rehacer todo sin aclarar las necesidades puede duplicar el trabajo y no resolver la dificultad.","Betty rehace todo el documento: aumenta su trabajo sin garantía de acertar.",{p:1,t:1}],
+ ["«Puedo revisarlo, pero necesito que me indiques al menos un ejemplo de lo que no se entiende».","A",95,"22212","Pedir una indicación concreta es una forma directa de solicitar retroalimentación útil.","Hugo señala un apartado específico que necesita mayor claridad.",{a:1,r:{Hugo:3}}]]},
+{n:"Un desacuerdo con el director",sc:"oficina",cast:["Armando"],
+ lines:[["Armando","Voy a mover la reunión con los proveedores a las nueve. Confirma el cambio."],["Betty","A esa hora está programada la reunión de producción y ya confirmaron su asistencia."],["Armando","Entonces avísales que deben cambiarla. Necesitamos hacer esto rápido."]],
+ q:"¿Cómo puede Betty comunicar el problema y ayudar a encontrar una alternativa?",tr:"",
+ o:[["«De acuerdo, la cambio. Si producción se molesta, les explicaré que fue una decisión tuya».","M",55,"11010","Elemento adecuado: atiende la solicitud del director y evita discutir. A mejorar: la frase «fue una decisión tuya» traslada la responsabilidad de forma indirecta y anticipa un reproche, en lugar de plantear abiertamente el cruce de reuniones.","El cambio se confirma, pero el reproche implícito puede generar tensión con producción y con Armando.",{t:4,u:1,r:{Armando:1}}],
+ ["«Ya te dije que a esa hora hay una reunión. No puedo estar solucionando cambios que se deciden sin revisar la agenda».","G",25,"10100","La respuesta señala un problema real, pero utiliza un tono que dificulta buscar una solución conjunta.","Armando interpreta la respuesta como una confrontación y la conversación se tensa.",{t:8,u:1,r:{Armando:-8}}],
+ ["«A las nueve coinciden dos reuniones. Puedo consultar otra hora para proveedores o confirmar si producción tiene disponibilidad para moverla».","A",100,"22222","La respuesta ofrece alternativas y comprueba la disponibilidad antes de confirmar un cambio.","Betty consulta disponibilidad antes de confirmar la modificación.",{a:1,t:-3,r:{Armando:4}}],
+ ["«Antes de confirmar el cambio, necesito saber cuál de las dos reuniones tiene prioridad. Las dos están confirmadas y no puedo garantizar que ambas puedan moverse».","A",100,"22122","Solicitar una prioridad explícita ayuda a aclarar responsabilidades y evita prometer algo que depende de terceros.","Armando debe establecer explícitamente cuál reunión tiene prioridad.",{a:1,t:-2,r:{Armando:3}}]]},
+{n:"Una fecha imposible",sc:"oficina",cast:["Armando"],
+ lines:[["Armando","Necesito que prepares el informe completo y lo envíes dentro de treinta minutos."],["Betty","Para verificar los datos y revisar los anexos necesito más tiempo."],["Armando","No tenemos mucho margen. Intenta terminarlo."]],
+ q:"¿Cómo puede Betty comunicar una limitación sin comprometerse a una entrega que no puede garantizar?",tr:"",
+ o:[["«Voy a intentarlo. Te lo envío en treinta minutos, aunque todavía no he terminado de revisar los anexos».","P",40,"00010","Prometer un plazo sin verificar las condiciones puede generar errores y expectativas poco realistas.","Betty se compromete al plazo sin revisar los anexos: crece el riesgo de entregar información incompleta.",{p:1,t:4,r:{Armando:1}}],
+ ["«Con los anexos pendientes no puedo garantizar un informe completo en treinta minutos. Puedo enviarte una versión preliminar y completar la revisión después».","A",100,"22222","La respuesta comunica una limitación y ofrece una alternativa concreta.","Armando utiliza la versión preliminar para avanzar mientras espera el documento final.",{a:1,t:-3,r:{Armando:5}}],
+ ["«No voy a prometer una entrega que no puedo cumplir. Necesito más tiempo para revisar los datos».","A",90,"22200","La negativa es clara y respetuosa, aunque podría facilitar el acuerdo si incluye una alternativa.","Armando debe renegociar el plazo o decidir qué revisión priorizar.",{t:-1,r:{Armando:2}}],
+ ["«Es imposible hacerlo así. Si quieres un informe bien hecho, no me pongas plazos absurdos».","G",20,"10100","La crítica personal puede aumentar la tensión y desplazar la conversación de la viabilidad del plazo.","La conversación se vuelve defensiva y el acuerdo se retrasa.",{t:8,u:1,r:{Armando:-8}}]]},
+{n:"Un malentendido",sc:"sala",cast:["Marcela"],
+ lines:[["Betty","Para evitar que se crucen las intervenciones, necesitamos confirmar el orden de las presentaciones."],["Marcela","¿Estás diciendo que yo organicé mal la reunión?"],["Betty","No, me refiero a que todavía tenemos dos horarios que coinciden."],["Marcela","Pues así sonó."]],
+ q:"¿Cómo puede Betty aclarar el malentendido sin renunciar a la información que necesita comunicar?",tr:"",
+ o:[["«No dije que organizaras mal la reunión. Estoy hablando de los horarios que aparecen en el documento».","A",90,"21111","Aclarar los hechos ayuda a corregir una interpretación, aunque es importante evitar que la aclaración se convierta en una disputa.","Marcela comprende la aclaración, aunque necesita que Betty señale el conflicto concreto.",{r:{Marcela:2}}],
+ ["«Perdón, tienes razón. No debí mencionar el problema con la agenda».","P",40,"01010","Disculparse puede ser adecuado si hubo un daño, pero abandonar una observación necesaria para evitar el desacuerdo deja el problema sin resolver.","La coincidencia de horarios queda pendiente.",{u:1,p:1}],
+ ["«Si interpretas todo como una crítica, no vamos a poder revisar nada».","G",20,"10100","La generalización personal aumenta la tensión y dificulta comprender qué se necesita aclarar.","Marcela se pone a la defensiva y la discusión se desplaza a la interpretación personal.",{t:8,u:1,r:{Marcela:-8}}],
+ ["«Entiendo que haya sonado como una crítica. Mi intención es revisar los dos horarios que coinciden, no evaluar tu trabajo».","A",100,"22222","Reconocer cómo se interpretó un mensaje y explicar la intención permite reparar el malentendido sin renunciar al objetivo.","Marcela acepta revisar el documento.",{a:1,t:-3,r:{Marcela:5},f:"c3r9_repair"}]]},
+{n:"No me están escuchando",sc:"sala",cast:["Hugo","Armando"],
+ lines:[["Narrador","Betty intenta comunicar que una de las citas no está confirmada, pero Armando y Hugo hablan simultáneamente."],["Betty","Necesito confirmar algo sobre la reunión de los proveedores…"],["Hugo","Yo creo que deberíamos empezar por los diseños."],["Armando","Sí, primero revisamos el orden de las presentaciones."],["Narrador","Betty todavía no ha terminado su intervención."]],
+ q:"¿Cómo puede Betty recuperar el espacio para comunicar información importante?",tr:"",
+ o:[["Betty deja que continúen y espera a que alguien le pregunte si tiene algo pendiente.","P",35,"00010","Esperar indefinidamente puede dejar información importante fuera de la decisión.","La conversación avanza sin Betty y la cita sin confirmar podría causar una dificultad posterior.",{p:1,u:1}],
+ ["«Necesito terminar esta información porque afecta la agenda. Después podemos revisar el orden de los diseños».","A",100,"22112","La respuesta es directa y explica por qué necesita intervenir.","El equipo detiene la discusión y revisa la información pendiente.",{a:1,t:-2,r:{Armando:2,Hugo:2}}],
+ ["«¿Me pueden escuchar por una vez? Parece que nada de lo que digo les importa».","G",25,"10100","La frustración puede ser comprensible, pero la acusación general puede provocar defensividad.","Los participantes se sienten acusados y la conversación pierde foco.",{t:8,u:1,r:{Armando:-5,Hugo:-5}}],
+ ["«Perdón, ¿puedo terminar? Todavía no he confirmado la cita y necesitamos resolverlo antes de cerrar el horario».","A",100,"22212","Solicitar la palabra y explicar la urgencia ayuda a recuperar el espacio de participación.","Armando pregunta por el estado de la confirmación y permite que Betty continúe.",{a:1,t:-3,r:{Armando:3,Hugo:2}}]]},
+{n:"Un error compartido",sc:"recepcion",cast:["Patricia"],
+ lines:[["Narrador","Betty y Patricia descubren que el documento enviado al equipo tiene un horario incorrecto. Ambas habían trabajado en distintas partes del archivo."],["Patricia","El documento tiene una hora equivocada. Ahora todos van a pensar que fui yo."],["Betty","Todavía no sabemos en qué momento se modificó."],["Patricia","Yo solo completé la información que me enviaste."]],
+ q:"¿Cómo pueden abordar el error sin asumir culpas precipitadamente ni ignorar la necesidad de corregirlo?",tr:"",
+ o:[["«Yo no lo hice. Revisa tu parte antes de decir que el error es mío».","G",20,"10100","Defenderse antes de verificar los hechos puede convertir un error corregible en un conflicto interpersonal.","Aumenta la tensión entre Betty y Patricia y la corrección se retrasa.",{t:8,u:1,r:{Patricia:-8}}],
+ ["«Mejor no digamos nada hasta que alguien pregunte. Podemos corregir el archivo y esperar».","P",35,"00010","Corregir sin comunicar un error relevante puede mantener a otras personas trabajando con información equivocada.","El error sigue circulando y puede generar confusión.",{u:1,p:1,t:3}],
+ ["«Revisemos el historial del documento, corrijamos la hora y confirmemos a quién debemos enviar la actualización».","A",100,"22222","La respuesta combina verificación, corrección y comunicación de la actualización.","Se corrige el archivo y se envía una actualización a los destinatarios.",{a:1,t:-3,r:{Patricia:4}}],
+ ["«No sabemos todavía dónde se produjo el cambio. Revisemos las versiones y dejemos corregido el documento antes de informar al equipo».","A",100,"22222","La respuesta prioriza comprobar los hechos antes de atribuir responsabilidades y corregir la información.","El equipo verifica la versión correcta sin atribuir responsabilidades sin evidencia.",{a:1,t:-3,r:{Patricia:4}}]]},
+{n:"La crisis final",sc:"presentacion",cast:["Armando","Marcela","Hugo","Patricia"],
+ lines:[["Narrador","Faltan pocos minutos para que lleguen los aliados comerciales. La agenda tiene una coincidencia de horarios, falta confirmar una intervención y el documento compartido necesita una revisión final."],["Armando","Necesitamos resolver esto ahora. No podemos empezar la presentación con información contradictoria."],["Marcela","Tenemos que decidir qué va primero."],["Hugo","Yo necesito saber si presento los diseños antes o después de los proveedores."],["Patricia","No quiero que después digan que fue culpa mía si algo sale mal."],["Armando","Betty, ayúdanos a ordenar esto. ¿Qué propones?"]],
+ q:"¿Qué estrategia puede utilizar Betty para ayudar al equipo a coordinarse bajo presión?",tr:"",
+ o:[["«Yo me encargo de todo, como siempre. Ustedes sigan preparando lo suyo y después les cuento cómo queda».","M",60,"11010","Elemento adecuado: tomar la iniciativa puede ser útil. A mejorar: «como siempre» expresa un reproche indirecto, y asumir toda la responsabilidad genera sobrecarga y reduce la participación del equipo.","Betty asume una carga excesiva y el reproche implícito incomoda al equipo; la resolución dependerá de las tareas pendientes y la información disponible.",{p:1,t:2,f:"c3r12_overload"}],
+ ["«Tenemos que resolver primero los horarios que se cruzan. Propongo confirmar el orden, revisar el documento y asignar a cada persona la información que debe verificar».","A",100,"22222","La respuesta organiza la situación por prioridades y propone un procedimiento compartido.","El equipo acepta revisar las prioridades en orden.",{a:1,t:-3,f:"c3r12_coordination"}],
+ ["«Cada uno tiene que hacerse cargo de sus errores. No podemos seguir perdiendo tiempo discutiendo».","G",20,"10100","La culpabilización puede aumentar la tensión justo cuando se necesita cooperación.","La discusión aumenta y habrá que recuperar la cooperación.",{t:8,u:1,r:{Marcela:-4,Hugo:-4,Patricia:-6}}],
+ ["«Primero confirmemos el orden de las intervenciones. Armando puede validar la agenda, Marcela revisar los horarios y yo actualizaré el documento cuando tengamos los datos confirmados».","A",100,"22222","La respuesta convierte un problema general en responsabilidades y tareas concretas.","Se asignan responsabilidades concretas a cada persona.",{a:2,t:-4,f:"c3r12_delegation"}]]}
+];
+
+/* ===== StoryData ===== */
+const N=t=>["Narrador",t];
+const StoryData={steps:[
+ {k:"t"},
+ {k:"d",sc:"escritorio",cast:["Armando"],lines:[["Armando","Buenos días, Betty. Hoy necesitamos dejar organizadas varias reuniones de la colección. Te enviaré los cambios a medida que los confirme."],["Betty","Buenos días. Tengo la agenda abierta y los documentos preparados. Voy a revisar las prioridades."],["Armando","Perfecto. Si surge algo urgente, te aviso."],N("Armando sale de la oficina. Betty revisa su agenda. Antes de que pueda empezar, Patricia se acerca con una solicitud y Marcela anuncia que habrá una reunión extraordinaria.")]},
+ {k:"c",i:0},{k:"c",i:1},{k:"c",i:2},{k:"c",i:3},{k:"e",c:0},
+ {k:"d",sc:"oficina",cast:["Armando"],lines:[N("Al día siguiente, la preparación de la colección entra en una fase decisiva. Los proveedores necesitan confirmaciones, la dirección solicita documentos y el equipo creativo pide cambios."),N("Armando comienza a recibir presión por parte de los aliados comerciales. Betty tendrá que organizar las solicitudes sin perder de vista sus compromisos y sin asumir que todo puede resolverse al mismo tiempo."),["Armando","Betty, necesito que hoy todo quede organizado. No podemos llegar a la presentación con asuntos pendientes."],["Betty","Voy a revisar lo que falta y los compromisos que ya están confirmados."],["Armando","Bien. Empecemos por las prioridades."]]},
+ {k:"c",i:4},{k:"c",i:5},{k:"c",i:6},{k:"c",i:7},{k:"e",c:1},
+ {k:"d",sc:"sala",cast:["Armando","Marcela","Hugo","Patricia"],lines:[N("Llega el día de la presentación de la colección. El equipo ha trabajado durante semanas, pero todavía hay información por confirmar."),N("Las decisiones de los días anteriores han dejado acuerdos claros, tareas pendientes o tensiones que pueden influir en la coordinación."),["Armando","Necesitamos revisar la agenda, confirmar el orden de las intervenciones y asegurarnos de que todos tengan la información correcta."],["Marcela","Si algo no está claro, debemos resolverlo ahora."],["Hugo","Yo necesito saber cuándo presentaré los diseños."],["Patricia","Y yo tengo que confirmar qué documentos debo entregar."],N("Betty abre su carpeta. La reunión comienza, y una pequeña confusión amenaza con convertirse en un problema mayor.")]},
+ {k:"c",i:8},{k:"c",i:9},{k:"c",i:10},{k:"c",i:11},{k:"e",c:2},{k:"f"}
+]};
+const ED=[
+["CAPÍTULO 1 COMPLETADO: EL PRIMER DÍA EN Ecomoda","La primera jornada ha terminado. Betty ha tenido que gestionar interrupciones, comentarios incómodos, desacuerdos y solicitudes adicionales. Algunas decisiones han facilitado acuerdos; otras han dejado tareas o conversaciones pendientes.","¿En qué situación te resultó más difícil expresar lo que necesitabas sin evitar el conflicto ni atacar a la otra persona?","CONTINUAR AL CAPÍTULO 2"],
+["CAPÍTULO 2 COMPLETADO: LA AGENDA IMPOSIBLE","La presión ha aumentado. Betty ha tenido que gestionar solicitudes urgentes, responder a críticas y negociar con Armando. Las decisiones tomadas han influido en la organización del trabajo y en la manera en que el equipo aborda los problemas.","¿Cómo puedes comunicar que una tarea no es viable en el plazo previsto sin renunciar a tu responsabilidad ni asumir compromisos imposibles?","CONTINUAR AL CAPÍTULO 3"],
+["CAPÍTULO 3 COMPLETADO: LA GRAN PRESENTACIÓN","La presentación ha llegado a su momento decisivo. Las decisiones de Betty han influido en la forma de abordar los malentendidos, recuperar el espacio de participación, corregir errores y coordinar al equipo.","Cuando existe presión y varias personas están en desacuerdo, ¿qué puedes hacer para expresar tus necesidades y, al mismo tiempo, facilitar una solución compartida?","VER RESULTADO FINAL"]];
+const ENDS={
+A:["Desenlace A: presentación colaborativa",[["","El equipo revisa la agenda, confirma los horarios y distribuye las últimas tareas. La presentación comienza con una coordinación clara. No todos están de acuerdo en cada detalle, pero consiguen trabajar con la información disponible y resolver los problemas prioritarios."],["Armando","Gracias por organizar las prioridades. Todavía tendremos cosas que mejorar, pero hoy logramos coordinarnos."],["Betty","Nos ayudó revisar qué necesitaba resolverse primero y dejar claras las responsabilidades."],["","La presentación comienza. Ecomoda muestra su colección y el equipo comprende que una buena coordinación no consiste en evitar todos los desacuerdos, sino en saber abordarlos."]]],
+B:["Desenlace B: presentación con tensiones pendientes",[["","La presentación se realiza, pero algunos cambios de última hora generan tensión. El equipo consigue resolver lo urgente, aunque reconoce que necesita revisar la forma en que distribuye las tareas y comunica sus expectativas."],["Armando","Logramos presentar la colección, pero necesitamos mejorar la coordinación."],["Betty","Podemos revisar los compromisos y establecer una forma más clara de confirmar los cambios."],["","La colección se presenta. Quedan asuntos pendientes, pero el equipo tiene la oportunidad de convertirlos en aprendizajes para el próximo proyecto."]]],
+C:["Desenlace C: reorganización necesaria",[["","La presentación necesita una reorganización de última hora. El equipo decide ajustar el orden de las intervenciones y revisar las responsabilidades antes de continuar."],["Armando","Tenemos que reorganizarnos. No podemos seguir trabajando con prioridades distintas."],["Betty","Podemos empezar por confirmar las tareas pendientes, definir responsables y acordar cómo comunicaremos los próximos cambios."],["","La situación no sale exactamente como el equipo esperaba. Sin embargo, queda claro qué necesita cambiar: las prioridades deben comunicarse, las responsabilidades deben definirse y los desacuerdos deben abordarse antes de que se conviertan en crisis."]]]};
+
+/* ===== ConsequenceEngine ===== */
+const ConsequenceEngine={
+ apply(o){const f=o[6];G.tension=clamp(G.tension+(f.t||0));G.pendingTasks+=f.p||0;G.unresolvedConflicts+=f.u||0;G.completedAgreements+=f.a||0;
+  for(const k in (f.r||{}))G.relationships[k]=clamp(G.relationships[k]+f.r[k]);
+  if(f.f)G.flags["flag_"+f.f]=true;
+  o[3].split("").forEach((d,k)=>G.indicators[DK[k]]=clamp(G.indicators[DK[k]]+(d-1)*3))},
+ extras(){const L=[],g=G,avg=Object.values(g.relationships).reduce((a,b)=>a+b)/4;
+  if(g.pendingTasks>=2)L.push(N("Todavía hay documentos pendientes de los días anteriores. Antes de continuar, el equipo debe decidir cuál revisar primero: el informe de proveedores o el documento compartido."),["Armando","Revisemos primero el documento compartido; el informe puede esperar unos minutos."]);
+  if(g.tension>=35)L.push(["Betty","Marcela, antes de seguir quiero aclarar algo: mi intención es resolver esto juntos, no señalar a nadie."],["Marcela","Está bien. Concentrémonos en lo que falta."]);
+  if(g.completedAgreements>=4)L.push(N("Los acuerdos de los días anteriores le sirven al equipo como base: lo ya confirmado se retoma sin discutirlo de nuevo y la crisis se resuelve con mayor rapidez."));
+  if(avg>=60)L.push(N("La relación cooperativa entre colegas permite una coordinación más fluida."));
+  else if(avg<=42)L.push(N("Algunas relaciones siguen tensas, pero el equipo mantiene la disposición de trabajar junto."));
+  return L}
+};
+const RelationshipEngine={tone(v){return v>=60?"cooperativa":v<=40?"tensa":"estable"}};
+
+/* ===== EvaluationEngine ===== */
+const REC=["Practica nombrar con precisión qué necesitas y qué información debes comunicar.","Ensaya formas de marcar desacuerdos sin descalificar: habla de la tarea o del hecho, no de la persona.","Entrena frases breves para decir hasta dónde puedes llegar y qué alternativa ofreces.","Antes de responder, pregunta o verifica los datos para entender la perspectiva de la otra persona.","Cuando algo no sea viable, acompaña tu límite con una alternativa o una propuesta de orden."];
+const EvaluationEngine={
+ results(a,b){const R=[];for(let i=a;i<b;i++)if(G.challengeResults[i])R.push(G.challengeResults[i]);return R},
+ dims(R){const d=[0,0,0,0,0];R.forEach(r=>r.dims.split("").forEach((x,k)=>d[k]+=+x));return d},
+ counts(R){const c={A:0,P:0,G:0,M:0};R.forEach(r=>c[r.cat]++);return c},
+ rec(d,n){const p=d.map(v=>v/(2*n)*100),m=p.indexOf(Math.min(...p));return p[m]>=75?"Tus decisiones mostraron estrategias claras y variadas. Sigue practicando frases que combinen un límite con una alternativa concreta.":REC[m]},
+ level(p){return p>=75?"muy presente":p>=50?"en desarrollo":"por fortalecer"},
+ ending(){const g=G;if(g.pendingTasks>=4||g.unresolvedConflicts>=4||g.tension>=55)return"C";
+  if(g.completedAgreements>=5&&g.pendingTasks<=2&&g.tension<=30&&g.unresolvedConflicts<=2)return"A";return"B"},
+ badges(){const R=this.results(0,12),b=[],n=f=>R.filter(f).length;
+  if(n(r=>r.dims[2]==2)>=2)b.push("Límites saludables");
+  if(n(r=>r.dims[3]==2)>=2)b.push("Escucha activa");
+  if(n(r=>r.dims[4]==2)>=2)b.push("Negociación");
+  if(n(r=>r.cat=="A"&&r.dims[0]==2)>=3)b.push("Comunicación constructiva");
+  const r12=G.challengeResults[11];if(r12&&(r12.j==1||r12.j==3))b.push("Coordinación de equipo");return b},
+ conseq(){const g=G,L=[];
+  L.push(g.pendingTasks?`Hay ${g.pendingTasks} tarea(s) pendiente(s) acumulada(s).`:"Las tareas están bajo control.");
+  L.push(g.unresolvedConflicts?`Quedan ${g.unresolvedConflicts} conversación(es) o conflicto(s) sin resolver.`:"No quedan conflictos importantes sin resolver.");
+  L.push(`Se han concretado ${g.completedAgreements} acuerdo(s).`);
+  L.push(g.tension<=25?"El ambiente del equipo es de cooperación.":g.tension<=45?"Hay algo de tensión en el equipo.":"La tensión del equipo es alta.");
+  L.push("Relaciones laborales: "+["Armando","Marcela","Hugo","Patricia"].map(k=>CH[k].n+" ("+RelationshipEngine.tone(g.relationships[k])+")").join(", ")+".");return L}
+};
+
+/* ===== InterfaceController / DialogueSystem ===== */
+const IC={
+ show(h){app.innerHTML=`<div class="fade">${h}</div>`;window.scrollTo(0,0)},
+ ask(msg,yes){const m=document.createElement("div");m.className="modal";m.innerHTML=`<div class="panel" role="dialog" aria-modal="true" style="max-width:420px"><p>${msg}</p><button class="btn" id="mY">SÍ, CONFIRMAR</button><button class="btn" id="mN">CANCELAR</button></div>`;document.body.appendChild(m);
+  m.querySelector("#mN").onclick=()=>m.remove();m.querySelector("#mY").onclick=()=>{m.remove();yes()};m.querySelector("#mN").focus()}
+};
+document.addEventListener("click",e=>{const c=e.target.closest(".ch");if(c){c.classList.remove("hop");void c.offsetWidth;c.classList.add("hop")}});
+const DialogueSystem={
+ play(sc,cast,lines,done){const my=RUN;let i=0;const go=()=>{if(my!==RUN)return;if(i>=lines.length)return done();const[w,t]=lines[i++],nar=w==""||w=="Narrador";
+  app.innerHTML=`<div class="fade">${SceneRenderer.stage(sc,cast,nar?"":w)}<div class="dlg${nar?" nar":""}" aria-live="polite">${nar?"":`<div class="who">${w}</div>`}${CH[w]?`<div class="port">${SceneRenderer.sprite(w,"5 2 14 15")}</div>`:""}<div class="dt"><p id="tx"></p><button class="btn" id="nx">SALTAR ▶</button></div></div></div>`;
+  const p=document.getElementById("tx"),b=document.getElementById("nx");let n=0,iv;
+  const fin=()=>{clearInterval(iv);p.textContent=t;b.textContent="SIGUIENTE ▶";b.onclick=go};
+  b.onclick=fin;b.focus();
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches)fin();else iv=setInterval(()=>{if(my!==RUN){clearInterval(iv);return}n+=2;p.textContent=t.slice(0,n);if(n>=t.length)fin()},22)};go()}
+};
+function runChallenge(i){setProg(i);G.currentChallenge=i;G.currentChapter=Math.floor(i/4);const c=ChallengeData[i];DialogueSystem.play(c.sc,c.cast,c.lines,()=>showOptions(i))}
+function showOptions(i){const c=ChallengeData[i];
+ app.innerHTML=`<div class="fade">${SceneRenderer.stage(c.sc,c.cast,"Betty")}<div class="panel"><div class="tag">Capítulo ${Math.floor(i/4)+1} · Reto ${i%4+1} de 4 (${i+1}/12) · Tecla 1-4 para elegir</div><h2>${c.q}</h2>${c.o.map((o,j)=>`<button class="opt" data-j="${j}"><span>${"ABCD"[j]}</span>${o[0]}</button>`).join("")}</div></div>`;
+ app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>choose(i,+b.dataset.j));app.querySelector(".opt").focus()}
+function choose(i,j){if(G.selectedAnswers[i]!==undefined)return;app.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k==j)b.classList.add("sel")});
+ const c=ChallengeData[i],o=c.o[j];G.selectedAnswers[i]=j;
+ G.challengeResults[i]={j,text:o[0],cat:o[1],score:o[2],dims:o[3],ex:o[4],cons:o[5]};
+ G.totalScore=Object.values(G.challengeResults).reduce((a,r)=>a+r.score,0);
+ ConsequenceEngine.apply(o);
+ let L=[N(o[5])];if(c.tr)L.push(N(c.tr));if(i==11)L=L.concat(ConsequenceEngine.extras());
+ const my=RUN;setTimeout(()=>{if(my===RUN)DialogueSystem.play(c.sc,c.cast,L,advance)},500)}
+document.addEventListener("keydown",e=>{if(document.querySelector(".modal"))return;if(/^[1-4]$/.test(e.key)){const b=app.querySelectorAll(".opt:not(:disabled)")[+e.key-1];if(b)b.click()}});
+function advance(){G.stepIndex++;runStep()}
+function runStep(){const s=StoryData.steps[G.stepIndex];
+ if(s.k=="t")return intro();
+ if(s.k=="d")return DialogueSystem.play(s.sc,s.cast,s.lines,advance);
+ if(s.k=="c")return runChallenge(s.i);
+ if(s.k=="e")return ChapterSummary.render(s.c,false);
+ if(s.k=="f")return FinalSummary.render()}
+function intro(){IC.show(`${SceneRenderer.stage("entrada",["Armando"],"")}<div class="card"><h2>Ecomoda. Moda con propósito, ideas que transforman.</h2><p>La nueva colección sostenible está a pocos días de su presentación. En la empresa, cada detalle importa: los diseños, los materiales, las reuniones y las decisiones del equipo.</p><p>Betty, secretaria del director Armando, comienza una jornada que parece rutinaria. Su agenda está llena, las solicitudes se acumulan y el equipo necesita coordinarse.</p><p>Durante este día, algunas conversaciones pondrán a prueba su manera de comunicar lo que piensa, necesita y considera importante.</p><button class="btn" id="go">COMENZAR JORNADA</button></div>`);
+ document.getElementById("go").onclick=advance}
+
+/* ===== ChapterSummary ===== */
+const ChapterSummary={render(c,rv){
+ const R=EvaluationEngine.results(c*4,c*4+4),sc=R.reduce((a,r)=>a+r.score,0);G.chapterResults[c]={score:sc};
+ if(!rv&&!G.completedChapters.includes(c))G.completedChapters.push(c);
+ if(c==2&&!G.ending)G.ending=EvaluationEngine.ending();
+ const cn=EvaluationEngine.counts(R),ds=EvaluationEngine.dims(R),e=ED[c];
+ let h=`<h1>${e[0]}</h1><div class="card"><p>${e[1]}</p></div>`;
+ R.forEach((r,k)=>{const i=c*4+k;h+=`<div class="card"><h3>Reto ${i+1}: ${ChallengeData[i].n}</h3><p><b>Opción elegida (${"ABCD"[r.j]}):</b> ${r.text}</p><p><b>Clasificación:</b> ${CATN[r.cat]} · <b>Puntuación:</b> ${r.score}/100</p><p>${r.ex}</p><p><i>Consecuencia en la historia:</i> ${r.cons}</p></div>`});
+ h+=`<div class="card"><h3>Resumen del capítulo</h3><p><b>Puntuación: ${sc} / 400</b></p><p>Respuestas asertivas: ${cn.A} · pasivas: ${cn.P} · agresivas: ${cn.G} · pasivo-agresivas: ${cn.M}</p>`;
+ DIM.forEach((d,k)=>{const p=Math.round(ds[k]/8*100);h+=`<div>${d}: ${EvaluationEngine.level(p)}</div><div class="bar"><i style="width:${p}%"></i></div>`});
+ h+=`<h3>Consecuencias acumuladas</h3><ul>${EvaluationEngine.conseq().map(x=>`<li>${x}</li>`).join("")}</ul><h3>Recomendación</h3><p>${EvaluationEngine.rec(ds,4)}</p></div>`;
+ if(c==2){const E=ENDS[G.ending];h+=`<div class="card"><h3>${E[0]}</h3>${E[1].map(l=>`<p>${l[0]?`<b>${l[0]}:</b> `:"<i>"}${l[1]}${l[0]?"":"</i>"}</p>`).join("")}</div>`}
+ h+=`<div class="card"><h3>Pregunta de reflexión</h3><p>${e[2]}</p><p><small>Esta evaluación describe decisiones en una situación simulada; no es un diagnóstico ni una medición psicológica validada.</small></p></div>`;
+ h+=rv?(c<2?`<button class="btn" id="nx2">VER CAPÍTULO ${c+2}</button>`:"")+`<button class="btn" id="bk">VOLVER AL RESULTADO FINAL</button>`:`<button class="btn" id="nx2">${e[3]}</button>`;
+ IC.show(h);const n=document.getElementById("nx2");
+ if(n)n.onclick=rv?()=>ChapterSummary.render(c+1,true):advance;
+ const b=document.getElementById("bk");if(b)b.onclick=()=>FinalSummary.render()}};
+
+/* ===== FinalSummary ===== */
+const FinalSummary={render(){setProg(12);
+ const R=EvaluationEngine.results(0,12),cn=EvaluationEngine.counts(R),ds=EvaluationEngine.dims(R);G.unlockedBadges=EvaluationEngine.badges();
+ if(!G.ending)G.ending=EvaluationEngine.ending();const E=ENDS[G.ending],n3=G.totalScore>=1000?3:G.totalScore>=800?2:1;
+ let h=`<div class="title"><h1>Ecomoda EN 8 BITS: MISIÓN COMPLETADA</h1><div class="stars" aria-label="${n3} de 3 estrellas">${"★".repeat(n3)}${"☆".repeat(3-n3)}</div></div><div class="card"><p>Has acompañado a Betty durante una jornada laboral llena de decisiones, desacuerdos y dificultades de coordinación.</p><p>Cada respuesta abrió posibilidades diferentes. Algunas facilitaron acuerdos; otras dejaron necesidades sin expresar o conflictos pendientes. Comprender esas diferencias permite reflexionar sobre cómo nos comunicamos en situaciones cotidianas.</p></div>`;
+ h+=`<div class="card"><h3>Resultados</h3><p><b>Puntuación total: ${G.totalScore} / 1.200</b></p><p>${[0,1,2].map(c=>`Capítulo ${c+1}: ${(G.chapterResults[c]||{score:0}).score}/400`).join(" · ")}</p><p>Respuestas asertivas: ${cn.A} · pasivas: ${cn.P} · agresivas: ${cn.G} · pasivo-agresivas: ${cn.M}</p>`;
+ DIM.forEach((d,k)=>{const p=Math.round(ds[k]/24*100);h+=`<div>${d}: ${EvaluationEngine.level(p)}</div><div class="bar"><i style="width:${p}%"></i></div>`});
+ h+=`<h3>Insignias</h3><p>${G.unlockedBadges.length?G.unlockedBadges.map(b=>`<span class="badge">★ ${b}</span>`).join(""):"Aún no se desbloquearon insignias. Puedes volver a jugar y probar otras estrategias."}</p><p><small>Las insignias son reconocimientos educativos, no certificados de competencia psicológica.</small></p>`;
+ h+=`<h3>${E[0]}</h3><h3>Consecuencias principales</h3><ul>${EvaluationEngine.conseq().map(x=>`<li>${x}</li>`).join("")}</ul><h3>Recomendación</h3><p>${EvaluationEngine.rec(ds,12)}</p></div>`;
+ h+=`<div class="card"><h3>Preguntas finales</h3><ol><li>¿Qué tipo de situación te resultó más difícil de resolver?</li><li>¿Qué diferencia identificaste entre expresar un desacuerdo y atacar a una persona?</li><li>¿Qué frase o estrategia podrías utilizar en una situación real de estudio o trabajo?</li></ol><p><small>Este videojuego es una actividad educativa de reflexión sobre la comunicación interpersonal. Sus resultados describen decisiones tomadas en situaciones simuladas y no constituyen un diagnóstico psicológico ni una evaluación clínica de la personalidad.</small></p></div><button class="btn" id="again">VOLVER A JUGAR</button><button class="btn" id="rev">REVISAR MIS DECISIONES</button>`;
+ IC.show(h);document.getElementById("again").onclick=()=>IC.ask("¿Volver a jugar? Se borrarán los resultados de esta partida.",GameReset.run);
+ document.getElementById("rev").onclick=()=>ChapterSummary.render(0,true)}};
+
+/* ===== GameReset / Inicio ===== */
+const GameReset={run(){RUN++;setProg(0);G=GameState.fresh();home()}};
+function home(){IC.show(`<div class="title">${SceneRenderer.stage("entrada",["Armando","Marcela","Hugo","Patricia"],"")}<h1>Ecomoda EN 8 BITS</h1><h2>MISIÓN ASERTIVIDAD</h2><p class="blink">▶ Tus decisiones cambian la historia ◀</p><button class="btn" id="b1">COMENZAR</button><button class="btn" id="b2">CÓMO JUGAR</button><button class="btn" id="b3">CRÉDITOS</button></div>`);
+ document.getElementById("b1").onclick=()=>{G.stepIndex=0;runStep()};
+ document.getElementById("b2").onclick=()=>info("CÓMO JUGAR",["Lee cada situación y elige la respuesta que consideres más adecuada. Tus decisiones afectarán las conversaciones, las relaciones laborales y el desarrollo de la historia.","No recibirás una puntuación inmediata. Al terminar cada capítulo podrás revisar tus decisiones, comprender sus consecuencias y explorar alternativas de comunicación.","No hay respuestas que definan tu personalidad. El objetivo es reflexionar sobre distintas estrategias de comunicación.","Puedes usar el ratón, el teclado (Tab, Enter, teclas 1 a 4) o la pantalla táctil. No hay temporizador."]);
+ document.getElementById("b3").onclick=()=>info("CRÉDITOS",["Actividad educativa sobre comunicación asertiva.","UNIVERSIDAD DE PAMPLONA - ESTUDIANTES DE PSICOLOGÍA."])}
+function info(t,P){IC.show(`<div class="card"><h2>${t}</h2>${P.map(p=>`<p>${p}</p>`).join("")}<button class="btn" id="bb">VOLVER</button></div>`);document.getElementById("bb").onclick=home}
+document.getElementById("hHome").onclick=()=>IC.ask("¿Volver al inicio? Se perderá el progreso de esta partida.",GameReset.run);
+document.getElementById("hReset").onclick=()=>IC.ask("¿Reiniciar la partida? Se borrarán todas tus decisiones y resultados.",GameReset.run);
+home();
+</script></body></html>
